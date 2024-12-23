@@ -33,8 +33,17 @@ steps:
 
 - script: |
     pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'Run tests'
+    pytest --maxfail=1 --disable-warnings --tb=short --junitxml=pytest-results.xml
+  displayName: 'Run tests and generate XML result'
+
+# Publish test results (linking to Azure DevOps Test ID)
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/pytest-results.xml'
+    testRunTitle: 'Python Unit Tests'
+    mergeTestResults: true
+    testResultsFormat: 'JUnit'
+  displayName: 'Publish test results'
 
 - script: |
     # Simple sum example in Python
